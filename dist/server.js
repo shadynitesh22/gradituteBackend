@@ -26,25 +26,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importStar(require("express"));
-const mongoose_1 = __importDefault(require("mongoose"));
+const express_1 = __importDefault(require("express"));
+const chalk_1 = __importDefault(require("chalk"));
+const debug_1 = __importDefault(require("debug"));
 const dotenv = __importStar(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
-const MongoClient = require('mongodb').MongoClient;
+const mongoose_service_1 = __importDefault(require("./Common/services/database/mongoose.service"));
+const routes_1 = __importDefault(require("./routes"));
 dotenv.config();
+var session = require('express-session');
 const bodyparser = require("body-parser");
 const app = (0, express_1.default)();
-const PORT = process.env.PORT || 3000;
+const debugLog = (0, debug_1.default)("app");
+const PORT = 9000;
 app.use(bodyparser.json());
-app.use(cors_1.default);
+app.use((0, cors_1.default)());
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: true }
+}));
 try {
-    mongoose_1.default.connect("mongodb+srv://ShadyNitesh:gnvNPf9NinliZUOO@searchable.uhorhow.mongodb.net/?retryWrites=true&w=majority");
+    mongoose_service_1.default.connectWithRetry();
+    console.log(chalk_1.default.red("Method is being executed..Connecting to Database"));
 }
-catch (_a) {
-    express_1.response.statusMessage;
-    console.log("error");
+catch (error) {
+    console.error(error);
 }
+(0, routes_1.default)(app);
 app.listen(PORT, () => {
-    console.log("me is running");
+    console.log(chalk_1.default.green(`I am running at ---> `, chalk_1.default.red.bold(`${PORT} `)));
 });
 //# sourceMappingURL=server.js.map
