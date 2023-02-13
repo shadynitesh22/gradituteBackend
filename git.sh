@@ -437,7 +437,7 @@ push_repo() {
         read version
         git tag -a $version -m "version $version"
         git push origin $version
-        echo "Build tag pushed successfully"
+        echo "Build tag pushed successfdsdully"
     fi
 }
 
