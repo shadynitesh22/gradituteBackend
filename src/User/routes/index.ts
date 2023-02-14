@@ -1,5 +1,5 @@
-import { UserController } from "./user.controller";
-import JWT from "../Common/middlewares/authentication"
+import { UserController } from "../controller/user.controller";
+import JWT from "../../Common/middlewares/authentication"
 const express = require('express');
 const route = express.Router();
 const user_ctr = new UserController()

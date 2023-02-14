@@ -1,4 +1,4 @@
-import User from "./user.model";
+import User from "../models/user.model";
 
 export class UserService {
   static async finduserbyemail(email: string) {

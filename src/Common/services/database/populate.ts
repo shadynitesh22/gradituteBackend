@@ -1,4 +1,4 @@
-import UserType from "../../../User/userType.model";
+import UserType from "../../../User/models/userType.model";
 import user_types_config from "../../../Config/user_types.config";
 
 // #Create UserType Schema

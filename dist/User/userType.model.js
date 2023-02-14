@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
-const user_types_config_1 = __importDefault(require("../config/user_types.config"));
+const user_types_config_1 = __importDefault(require("../Config/user_types.config"));
 // Will nested in user response as a nested dict like this:
 const UserTypeSechema = new mongoose_1.Schema({
     accessLevel: { type: String, required: true, default: user_types_config_1.default.user }

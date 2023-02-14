@@ -5,21 +5,25 @@ import * as dotenv from 'dotenv';
 import cors from 'cors';
 import mongooseService from './Common/services/database/mongoose.service';
 
-
+import passport from 'passport';
 
 import setRoute from './routes'
 
+
+
 dotenv.config();
 
-var session = require('express-session');
+const session = require('express-session');
 
 const bodyparser = require("body-parser");
 
 const app = express()
+const MongoStore = require('connect-mongo')(session);
 
 const debugLog: IDebugger = debug("app");
 
 const PORT = 9000;
+
 
 
 app.use(bodyparser.json());
@@ -27,14 +31,10 @@ app.use(bodyparser.json());
 
 app.use(cors());
 
-app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: true }
-}));
 
 
+
+// #Connecting to Database
 try {
   mongooseService.connectWithRetry();
 
@@ -44,6 +44,10 @@ try {
   console.error(error);
 
 }
+
+
+
+// #Setting Routes
 
 setRoute(app)
 

@@ -1,5 +1,5 @@
-import User from "../User/user.model";
-import { IUser } from "../User/user.interface";
+import User from "../User/models/user.model";
+import { IUser } from "../User/interface/user.interface";
 class AuthService {
   createUser(data: IUser) {
     try {
