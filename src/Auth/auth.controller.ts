@@ -5,11 +5,32 @@ import debug, { IDebugger } from "debug";
 import { Password } from "../Common/services/authentication/password";
 const jwtSecret: string = process.env.JWT_SECRET || "12321321";
 const tokenExpirationInSeconds = 36000;
+import passport from "passport";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import User from "../User/user.model";
 
 const log: IDebugger = debug("auth:controller");
 
+const jwtOpts = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: jwtSecret,
+};
+
+passport.use(
+  new JwtStrategy(jwtOpts, (jwtPayload, done) => {
+    User.findById(jwtPayload.id, (err, user) => {
+      if (err) return done(err, false);
+      if (user) return done(null, user);
+      return done(null, false);
+    });
+  })
+);
+
 export class AuthController {
     constructor() { }
+
+
+    
 
     // Login Function Begins here 
     async login(req: Request, res: Response, next: NextFunction) {

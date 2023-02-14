@@ -1,6 +1,6 @@
 
 import {Document, model, Schema} from 'mongoose';
-import user_types_config from '../config/user_types.config';
+import user_types_config from '../Config/user_types.config';
 
 // #Create UserType Schema
 

@@ -10,7 +10,23 @@ const debug_1 = __importDefault(require("debug"));
 const password_1 = require("../Common/services/authentication/password");
 const jwtSecret = process.env.JWT_SECRET || "12321321";
 const tokenExpirationInSeconds = 36000;
+const passport_1 = __importDefault(require("passport"));
+const passport_jwt_1 = require("passport-jwt");
+const user_model_1 = __importDefault(require("../User/user.model"));
 const log = (0, debug_1.default)("auth:controller");
+const jwtOpts = {
+    jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: jwtSecret,
+};
+passport_1.default.use(new passport_jwt_1.Strategy(jwtOpts, (jwtPayload, done) => {
+    user_model_1.default.findById(jwtPayload.id, (err, user) => {
+        if (err)
+            return done(err, false);
+        if (user)
+            return done(null, user);
+        return done(null, false);
+    });
+}));
 class AuthController {
     constructor() { }
     // Login Function Begins here 

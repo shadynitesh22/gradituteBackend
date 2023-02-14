@@ -30,6 +30,7 @@
     "mongoose": "^6.9.1",
     "node-encoder": "^2.0.4",
     "passport": "^0.6.0",
+    "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^7.1.2",
     "path": "^0.12.7",

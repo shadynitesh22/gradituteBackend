@@ -56,4 +56,61 @@
 //     });
 //   })
 // })
+// Signup function using passport for authentication and sessions
+// async signup(req: Request, res: Response, next: NextFunction) {
+//   try {
+//       const username = req.body.username;
+//       const email = req.body.email;
+//       const password = req.body.password;
+//       const UserType = req.body.UserType;
+//       const user = await authService.findUserByEmail(email);
+//       log("user", user);
+//       if (user) {
+//           throw new Error("User already exists");
+//       } else {
+//           const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+//           if (!passwordRegex.test(password)) {
+//               return res.status(400).json({
+//                   success: false,
+//                   message: "Password must contain at least 8 characters, including uppercase and lowercase letters, numbers, and special characters."
+//               });
+//           }
+//           try {
+//               const newUser = await authService.createUser({
+//                   username,
+//                   UserType,
+//                   email,
+//                   password
+//               });
+//               log(newUser, "Comes undefined i");
+//               passport.authenticate('local', (err, user, info) => {
+//                   if (err) {
+//                       return next(err);
+//                   }
+//                   if (!user) {
+//                       return res.status(400).json({
+//                           success: false,
+//                           message: info
+//                       });
+//                   }
+//                   req.logIn(user, function (err) {
+//                       if (err) {
+//                           return next(err);
+//                       }
+//                       return res.status(200).json({
+//                           success: true,
+//                           data: user,
+//                           message: "Successfully signed up and logged in"
+//                       });
+//                   });
+//               })(req, res, next);
+//           } catch (e) {
+//               log("Controller capturing error", e);
+//               throw new Error("Error while registering");
+//           }
+//       }
+//   } catch (e) {
+//       next(e);
+//   }
+// }
 //# sourceMappingURL=auth.controller.test.js.map
