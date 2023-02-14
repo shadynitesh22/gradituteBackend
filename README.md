@@ -12,23 +12,7 @@ Node Js application centered to focus as backend for angular app which is name a
 
 **Sprint 2**
 
-Tags : Started , In progress, Completed , Tested
 
-Tags
-
-Type
-
-Started
-
-Task is starting
-
-Inprogress
-
-Completed
-
-Task is in progress
-
-Task is completed
 
 **Connect to MongoDb atlas**
 
