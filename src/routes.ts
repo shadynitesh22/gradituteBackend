@@ -4,7 +4,7 @@ const route = express.Router();
 
 export default app => {
 app.use("",require('./Auth/index'));
-app.use("",require('./User/index'))
+app.use("",require('./User/routes/index'))
 
 
 

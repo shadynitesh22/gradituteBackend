@@ -34,9 +34,9 @@ export default function initPassportAndSessions(app: express.Application) {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    passport.use(new LocalStrategy(User.authenticate()));
-    passport.serializeUser(User.serializeUser());
-    passport.deserializeUser(User.deserializeUser());
+    // passport.use(new LocalStrategy(User.authenticate()));
+    // passport.serializeUser(User.serializeUser());
+    // passport.deserializeUser(User.deserializeUser());
 
     console.log("passport and sessions loaded")
 }

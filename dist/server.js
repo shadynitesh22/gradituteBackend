@@ -32,7 +32,6 @@ const debug_1 = __importDefault(require("debug"));
 const dotenv = __importStar(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const mongoose_service_1 = __importDefault(require("./Common/services/database/mongoose.service"));
-const passport_1 = __importDefault(require("passport"));
 const routes_1 = __importDefault(require("./routes"));
 dotenv.config();
 const session = require('express-session');
@@ -42,16 +41,6 @@ const debugLog = (0, debug_1.default)("app");
 const PORT = 9000;
 app.use(bodyparser.json());
 app.use((0, cors_1.default)());
-// #Using session and passport for presistance login
-app.use(session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: true, maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
-    }
-}));
-app.use(passport_1.default.initialize());
-app.use(passport_1.default.session());
 // #Connecting to Database
 try {
     mongoose_service_1.default.connectWithRetry();

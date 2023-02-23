@@ -18,7 +18,7 @@ const session = require('express-session');
 const bodyparser = require("body-parser");
 
 const app = express()
-const MongoStore = require('connect-mongo')(session);
+
 
 const debugLog: IDebugger = debug("app");
 

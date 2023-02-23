@@ -4,6 +4,6 @@ const express = require('express');
 const route = express.Router();
 exports.default = app => {
     app.use("", require('./Auth/index'));
-    app.use("", require('./User/index'));
+    app.use("", require('./User/routes/index'));
 };
 //# sourceMappingURL=routes.js.map

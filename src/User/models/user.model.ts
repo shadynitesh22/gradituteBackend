@@ -1,14 +1,12 @@
-import { Schema, Model, Document, PassportLocalDocument} from 'mongoose';
-import  { IuserType } from './userType.model';
+import { Schema, Model, Document} from 'mongoose';
+import  { IUserType } from './userType.model';
 import { IUser } from "../interface/user.interface";
 import { Password } from '../../Common/services/authentication/password';
 import mongooseService from '../../Common/services/database/mongoose.service'
 
-import passportLocalMongoose from 'passport-local-mongoose';
 
-
-export interface UserDocument extends PassportLocalDocument {
-    UserType: IuserType["_id"];
+export interface UserDocument extends Document {
+    UserType: IUserType["_id"];
     email: string;
     password: string;
     username: string;
@@ -42,7 +40,7 @@ const UserSchema :Schema = new Schema({
 
 );
 
-// This step is optional as we will use passport for authentication and passport will take care of this!!
+
 UserSchema.pre("save",async function (done) {
     if (this.isModified("password")){
 
@@ -55,15 +53,12 @@ UserSchema.pre("save",async function (done) {
 UserSchema.statics.build = (attrs:IUser) =>{
 return new User(attrs);
 }
-
-UserSchema.plugin(passportLocalMongoose);
 const User = mongooseService.getInstance().model<UserDocument, UserModel>(
     "User",
     UserSchema
   );
   
 
-
-
   
 export default User
+

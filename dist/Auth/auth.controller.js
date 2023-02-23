@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthController = void 0;
+exports.rememberMe = exports.AuthController = void 0;
 const auth_service_1 = __importDefault(require("./auth.service"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const debug_1 = __importDefault(require("debug"));
@@ -12,7 +12,7 @@ const jwtSecret = process.env.JWT_SECRET || "12321321";
 const tokenExpirationInSeconds = 36000;
 const passport_1 = __importDefault(require("passport"));
 const passport_jwt_1 = require("passport-jwt");
-const user_model_1 = __importDefault(require("../User/user.model"));
+const user_model_1 = __importDefault(require("../User/models/user.model"));
 const log = (0, debug_1.default)("auth:controller");
 const jwtOpts = {
     jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -122,4 +122,15 @@ class AuthController {
     }
 }
 exports.AuthController = AuthController;
+async function rememberMe(req, res, next) {
+    if (req.body.remember) {
+        console.log('remember me');
+        console.log(req.body.remember);
+        var oneWeek = 7 * 24 * 60 * 60 * 1000;
+        req.session.cookie.expires = new Date(Date.now() + oneWeek);
+        req.session.cookie.maxAge = oneWeek;
+    }
+    next();
+}
+exports.rememberMe = rememberMe;
 //# sourceMappingURL=auth.controller.js.map

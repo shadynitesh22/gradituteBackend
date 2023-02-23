@@ -1,10 +1,10 @@
 
-import {Document, model, Schema} from 'mongoose';
+import { Document, model, Schema } from 'mongoose';
 import user_types_config from '../../Config/user_types.config';
 
 // #Create UserType Schema
 
-export interface IuserType extends Document {
+export interface IUserType extends Document {
 
     accessLevel: string;
 
@@ -12,14 +12,18 @@ export interface IuserType extends Document {
 
 // Will nested in user response as a nested dict like this:
 const UserTypeSechema: Schema = new Schema({
-     accessLevel: 
-     {type: String, required: true, default:user_types_config.user}
-    
+    accessLevel:
+    {
+        type: String,
+        required: true,
+        default: user_types_config.user
+    }
+
 
 });
 
 
-const UserType = model <IuserType>('UserType', UserTypeSechema);
+const UserType = model<IUserType>('UserType', UserTypeSechema);
 
 
 export default UserType;
