@@ -8,6 +8,10 @@ const tokenExpirationInSeconds = 36000;
 import passport from "passport";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import User from "../User/models/user.model";
+import { CreateUserRequest } from "../Validators/CreateUserRequest";
+import { ApiError } from "../utils/ApiError";
+import RequestValidator from "../utils/Request.Validator";
+import { StatusCodes } from "http-status-codes";
 
 const log: IDebugger = debug("auth:controller");
 
@@ -33,53 +37,62 @@ export class AuthController {
     
 
     // Login Function Begins here 
+   
     async login(req: Request, res: Response, next: NextFunction) {
-        try {
-            const email = req.body.email;
-            const password = req.body.password;
-    
-            const user = await authService.findUserByEmail(email);
-            log("user", user);
-    
-            if (user) {
-                const isPasswordMatch = await Password.compare(user.password, password);
-                if (!isPasswordMatch) {
-                    return res.status(400).json({
-                        success: false,
-                        message: "Invalid Password"
-                    });
-                }
-    
-                const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-                if (!passwordRegex.test(password)) {
-                    return res.status(400).json({
-                        success: false,
-                        message: "Password must contain at least 8 characters, including uppercase and lowercase letters, numbers, and special characters."
-                    });
-                }
-    
-                log("jwt Secret", jwtSecret);
-    
-                const token = jwt.sign(req.body, jwtSecret, {
-                    expiresIn: tokenExpirationInSeconds,
-                });
-                return res.status(200).json({
-                    success: true,
-                    data: user,
-                    token,
-                });
-            } else {
-                log("User Not Found");
-                return res.status(404).json({
-                    success: false,
-                    message: "User not Found"
-                });
-            }
-        } catch (e) {
-            next(e);
+      try {
+        const email = req.body.email;
+        const password = req.body.password;
+  
+        const user = await authService.findUserByEmail(email);
+        console.log("user", user);
+  
+        if (user) {
+          const isPasswordMatch = await Password.compare(user.password, password);
+          if (!isPasswordMatch) {
+            throw new ApiError(
+              "Invalid Password",
+              StatusCodes.BAD_REQUEST,
+              "Two passwords are not the same"
+            );
+          }
+  
+          const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+          if (!passwordRegex.test(password)) {
+            throw new ApiError(
+              "Password formate is not correct",
+              StatusCodes.BAD_REQUEST,
+              "Password must contain at least 8 characters, including uppercase and lowercase letters, numbers, and special characters."
+            );
+          }
+  
+          console.log("jwt Secret", jwtSecret);
+  
+          const token = jwt.sign({ email }, jwtSecret, {
+            expiresIn: tokenExpirationInSeconds,
+          });
+          return res.status(StatusCodes.OK).json({
+            success: true,
+            data: user,
+            token,
+          });
+        } else {
+          console.log("User Not Found");
+          throw new ApiError(
+            "User not found",
+            StatusCodes.NOT_FOUND,
+            "You don't have an account"
+          );
         }
+      } catch (e) {
+        next(e);
+      }
     }
     
+    
+    
+    
+    // Login Function Ends here
+  
 
 
     async Signup(req: Request, res: Response, next: NextFunction) {
@@ -130,7 +143,7 @@ export class AuthController {
         }
       }
       
-      
+    
 
 }
 

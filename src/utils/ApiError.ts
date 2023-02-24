@@ -4,36 +4,43 @@ import { StatusCodes } from 'http-status-codes';
 
 export class ApiError extends Error {
     statusCode: number;
+    type: String;
     rawErrors: string[] = [];
-    constructor(statusCode: number, message: string, rawErrors?: string[]) {
+    static type: any;
+    
+    constructor(type:String,statusCode: number, message: string, rawErrors?: string[],) {
         super(message);
 
+        this.type = type || 'error';
         this.statusCode = statusCode;
+
         if (rawErrors) this.rawErrors = rawErrors;
         Error.captureStackTrace(this, this.constructor);
     }
 }
+console.log("empty request error");
 export class EmptyRequestError extends ApiError {
     constructor() {
-        super(StatusCodes.BAD_REQUEST, 'Request body is empty!');
+
+        super("bad-request",StatusCodes.BAD_REQUEST, 'Request body is empty!');
     }
 }
 
 export class TooManyRequestsError extends ApiError {
     constructor() {
-        super(StatusCodes.TOO_MANY_REQUESTS, 'Too many requests!');
+        super("To-many-request",StatusCodes.TOO_MANY_REQUESTS, 'Too many requests!');
     }
 }
 
 export class NotFoundError extends ApiError {
     constructor(path: string) {
-        super(StatusCodes.NOT_FOUND, `The requested path ${path} not found!`);
+        super("empty-path",StatusCodes.NOT_FOUND, `The requested path ${path} not found!`);
     }
 }
 
 export class BadRequestError extends ApiError {
     constructor(message: string, errors: string[]) {
-        super(StatusCodes.BAD_REQUEST, message, errors);
+        super("bad-req",StatusCodes.BAD_REQUEST, message, errors);
     }
 }
 

@@ -2,8 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import { ApiError, BadRequestError, NotFoundError, TooManyRequestsError, EmptyRequestError } from "./ApiError";
 
 export default class ErrorHandler {
+    
     static handleError(error: ApiError, req: Request, res: Response, next: NextFunction) {
+
         const { statusCode, message, rawErrors } = error;
+       
         res.status(statusCode).json({
             status: 'error',
             error: {
