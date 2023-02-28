@@ -13,8 +13,9 @@ const tokenExpirationInSeconds = 36000;
 const passport_1 = __importDefault(require("passport"));
 const passport_jwt_1 = require("passport-jwt");
 const user_model_1 = __importDefault(require("../User/models/user.model"));
-const ApiError_1 = require("../utils/ApiError");
+const ApiError_1 = require("../ErrorHandlers/ApiError");
 const http_status_codes_1 = require("http-status-codes");
+const ErrorHandlers_1 = __importDefault(require("../ErrorHandlers/ErrorHandlers"));
 const log = (0, debug_1.default)("auth:controller");
 const jwtOpts = {
     jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -37,15 +38,10 @@ class AuthController {
             const email = req.body.email;
             const password = req.body.password;
             const user = await auth_service_1.default.findUserByEmail(email);
-            console.log("user", user);
             if (user) {
                 const isPasswordMatch = await password_1.Password.compare(user.password, password);
                 if (!isPasswordMatch) {
-                    throw new ApiError_1.ApiError("Invalid Password", http_status_codes_1.StatusCodes.BAD_REQUEST, "Two passwords are not the same");
-                }
-                const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-                if (!passwordRegex.test(password)) {
-                    throw new ApiError_1.ApiError("Password formate is not correct", http_status_codes_1.StatusCodes.BAD_REQUEST, "Password must contain at least 8 characters, including uppercase and lowercase letters, numbers, and special characters.");
+                    ErrorHandlers_1.default.handleError(new ApiError_1.ApiError("Password Error", http_status_codes_1.StatusCodes.BAD_GATEWAY, "Password is wrong !"), req, res, next);
                 }
                 console.log("jwt Secret", jwtSecret);
                 const token = jsonwebtoken_1.default.sign({ email }, jwtSecret, {
@@ -58,12 +54,11 @@ class AuthController {
                 });
             }
             else {
-                console.log("User Not Found");
-                throw new ApiError_1.ApiError("User not found", http_status_codes_1.StatusCodes.NOT_FOUND, "You don't have an account");
+                ErrorHandlers_1.default.handleError(new ApiError_1.UserEmpty(), req, res, next);
             }
         }
-        catch (e) {
-            next(e);
+        catch (error) {
+            next(error);
         }
     }
     // Login Function Ends here

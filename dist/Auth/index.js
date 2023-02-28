@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Request_Validator_1 = __importDefault(require("../utils/Request.Validator"));
+const Request_Validator_1 = __importDefault(require("../ErrorHandlers/Request.Validator"));
 const CreateUserRequest_1 = require("../Validators/CreateUserRequest");
 const auth_controller_1 = require("./auth.controller");
 const express = require('express');

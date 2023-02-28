@@ -1,10 +1,7 @@
-
-import { ApiError } from '../utils/ApiError';
-import RequestValidator from '../utils/Request.Validator';
+import RequestValidator from '../ErrorHandlers/Request.Validator';
 import { CreateUserRequest } from '../Validators/CreateUserRequest';
 import {AuthController} from './auth.controller'
 const express = require('express');
-import { Request, Response, NextFunction } from 'express';
 
 const router = express.Router();
 const auth_ctr = new AuthController();

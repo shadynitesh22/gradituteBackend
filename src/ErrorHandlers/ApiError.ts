@@ -1,6 +1,6 @@
 
 import { StatusCodes } from 'http-status-codes';
-
+import { NextFunction, Request, Response } from 'express';
 
 export class ApiError extends Error {
     statusCode: number;
@@ -18,17 +18,22 @@ export class ApiError extends Error {
         Error.captureStackTrace(this, this.constructor);
     }
 }
-console.log("empty request error");
+
 export class EmptyRequestError extends ApiError {
     constructor() {
 
         super("bad-request",StatusCodes.BAD_REQUEST, 'Request body is empty!');
     }
 }
-
+ 
 export class TooManyRequestsError extends ApiError {
     constructor() {
         super("To-many-request",StatusCodes.TOO_MANY_REQUESTS, 'Too many requests!');
+    }
+}
+export class InvalidKeysError extends ApiError{
+    constructor(invalidKeys: string[]) {
+        super("invalid-keys",StatusCodes.BAD_REQUEST, `Invalid keys: ${invalidKeys.join(", ")}`);
     }
 }
 
@@ -44,16 +49,32 @@ export class BadRequestError extends ApiError {
     }
 }
 
-export function checkEmptyRequest(req: any): void {
-    if (!req.body || Object.keys(req.body).length === 0) {
-        throw new EmptyRequestError();
+
+export class UserEmpty extends ApiError {
+    constructor() {
+        super("empty-user",StatusCodes.BAD_REQUEST, 'User Does not exist!');
     }
-
-
-
-
 }
 
+export function PasswordFormatter(password: string): string {
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+        throw new BadRequestError(
+            "Password formate is not correct",
+            ["Password must contain at least 8 characters, including uppercase and lowercase letters, numbers, and special characters."]
+        );
+    }
+    return password;
+    
+}
+
+export function UserAlreadyExist(req:Request){
+    const user = req.body.email;
+    if (user) {
+        throw new UserEmpty();
+          
+    }
+}
 export function checkTooManyRequests(req: any, limit: number, windowsMs: number): void {
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     const timeStamp = Date.now();

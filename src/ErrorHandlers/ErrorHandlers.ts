@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { ApiError, BadRequestError, NotFoundError, TooManyRequestsError, EmptyRequestError } from "./ApiError";
+
+import { ApiError, BadRequestError, NotFoundError, TooManyRequestsError, EmptyRequestError, UserEmpty, PasswordFormatter } from "./ApiError";
 
 export default class ErrorHandler {
     
-    static handleError(error: ApiError, req: Request, res: Response, next: NextFunction) {
+    static handleError(error: ApiError, _req: Request, res: Response, _next: NextFunction) {
 
         const { statusCode, message, rawErrors } = error;
        
@@ -32,7 +33,24 @@ export default class ErrorHandler {
         ErrorHandler.handleError(error, req, res, next);
     }
 
-    static convertError(error: any, req: Request, res: Response, next: NextFunction) {
+    static passwordFormat(req: Request, res: Response, next: NextFunction) {
+        PasswordFormatter(req.body.password);
+        next();
+
+    }
+    
+    static userDoseNotExist(req: Request, res: Response, next: NextFunction) {
+        const user = req.body.email;
+        if (!user) {
+            const error = new UserEmpty();
+            ErrorHandler.handleError(error, req, res, next);
+        }
+        next();
+
+    }
+   
+
+    static convertError(error: any, _req: Request, _res: Response, next: NextFunction) {
         let convertedError = error;
         if (!error) {
             convertedError = new EmptyRequestError();
@@ -41,4 +59,5 @@ export default class ErrorHandler {
         }
         next(convertedError);
     }
+
 }
