@@ -9,7 +9,7 @@ import passport from "passport";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import User from "../User/models/user.model";
 
-import { ApiError, UserAlreadyExist, UserEmpty } from "../ErrorHandlers/ApiError";
+import { ApiError, UserEmpty } from "../ErrorHandlers/ApiError";
 
 import { StatusCodes } from "http-status-codes";
 import ErrorHandler from "../ErrorHandlers/ErrorHandlers";

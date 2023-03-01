@@ -9,6 +9,7 @@ import {
   TooManyRequestsError,
 } from "./ApiError";
 import ErrorHandler from "../ErrorHandlers/ErrorHandlers";
+import { CreateUserRequest } from "../Validators/CreateUserRequest";
 
 type ErrorType = {
   type: string;
@@ -17,16 +18,30 @@ type ErrorType = {
 };
 
 export default class RequestValidator {
+  static validateLoginRequest = async (req: Request): Promise<void> => {
+    const convertedObject = plainToClass(CreateUserRequest, req.body);
+    const errors = await validate(convertedObject);
+    if (errors.length > 0) {
+      let rawErrors: string[] = [];
+      for (const errorItem of errors) {
+        rawErrors = rawErrors.concat(
+          ...Object.values(errorItem.constraints ?? {})
+        );
+      }
+      throw new BadRequestError("Request Validation Failed", rawErrors);
+    }
+  };
   static validate = <T extends object>(
     classInstance: ClassConstructor<T>,
     ...errorTypes: ErrorType[]
   ) => async (req: Request, res: Response, next: NextFunction) => {
+
     try {
       const isRequestEmpty = RequestValidator.checkIfRequestIsEmpty(req);
       if (isRequestEmpty) {
         throw new EmptyRequestError();
       }
-
+      await RequestValidator.validateLoginRequest(req);
       const convertedObject = plainToClass(classInstance, req.body);
       const errors = await validate(convertedObject);
      
@@ -38,12 +53,10 @@ export default class RequestValidator {
   
           rawErrors.push(...Object.values(errorItem.constraints ?? {}));
         
-        }
-        
+        }        
         const validationErrorText = "Request Validation Failed";
         
-
-        console.log("This error is ignored Why", errors)
+        console.log(errors)
         let error: ApiError;
 
         
@@ -90,7 +103,7 @@ export default class RequestValidator {
             "Internal Server Error - Unknown Error Type"
           );
         }
-
+        console.log("I'm here 2")
         ErrorHandler.handleError(error, req, res, next);
       } else {
         next();
