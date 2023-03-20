@@ -10,6 +10,7 @@ import {
 } from "./ApiError";
 import ErrorHandler from "../ErrorHandlers/ErrorHandlers";
 import { CreateUserRequest } from "../Validators/CreateUserRequest";
+import { SignUpUserRequest } from "../Validators/SignupUser.request";
 
 type ErrorType = {
   type: string;
@@ -31,6 +32,19 @@ export default class RequestValidator {
       throw new BadRequestError("Request Validation Failed", rawErrors);
     }
   };
+  static validateSignupRequest = async (req: Request): Promise<void> => {
+    const convertedObject = plainToClass(SignUpUserRequest, req.body);
+    const errors = await validate(convertedObject);
+    if (errors.length > 0) {
+      let rawErrors: string[] = [];
+      for (const errorItem of errors) {
+        rawErrors = rawErrors.concat(
+          ...Object.values(errorItem.constraints ?? {})
+        );
+      }
+      throw new BadRequestError("Request Validation Failed", rawErrors);
+    }
+  };
   static validate = <T extends object>(
     classInstance: ClassConstructor<T>,
     ...errorTypes: ErrorType[]
@@ -41,7 +55,16 @@ export default class RequestValidator {
       if (isRequestEmpty) {
         throw new EmptyRequestError();
       }
-      await RequestValidator.validateLoginRequest(req);
+      
+      switch (classInstance) {
+        case CreateUserRequest:
+          await RequestValidator.validateLoginRequest(req);
+          break;
+        case SignUpUserRequest:
+          await RequestValidator.validateSignupRequest(req);
+          break;
+        // Add more cases for other request types as needed
+      }
       const convertedObject = plainToClass(classInstance, req.body);
       const errors = await validate(convertedObject);
      
@@ -56,7 +79,7 @@ export default class RequestValidator {
         }        
         const validationErrorText = "Request Validation Failed";
         
-        console.log(errors)
+      
         let error: ApiError;
 
         
@@ -103,7 +126,7 @@ export default class RequestValidator {
             "Internal Server Error - Unknown Error Type"
           );
         }
-        console.log("I'm here 2")
+    
         ErrorHandler.handleError(error, req, res, next);
       } else {
         next();

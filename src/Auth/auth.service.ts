@@ -6,7 +6,7 @@ class AuthService {
 
       const user = User.build(data);
       return user.save().then(user => {
-        // console.log(user, "Works hai");
+
         return user;
       }).catch(e => {
         throw new Error(`Error while creating user: ${e.message}`);
@@ -15,6 +15,25 @@ class AuthService {
       throw new Error(`Error while creating user: ${e.message}`);
     }
   
+  }
+  createTempUser(data: IUser) {
+    try {
+
+      const user = User.build(data);
+      return user.save().then(user => {
+
+        return user;
+      }).catch(e => {
+        throw new Error(`Error while creating user: ${e.message}`);
+      });
+    } catch (e) {
+      throw new Error(`Error while creating user: ${e.message}`);
+    }
+    
+  }
+  updateUser(id: string, data: IUser) {
+
+    return User.findByIdAndUpdate(id, data, { new: true }).exec();
   }
   
 

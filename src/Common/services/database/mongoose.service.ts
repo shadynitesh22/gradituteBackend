@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 import debug, { IDebugger } from "debug";
 import chalk from "chalk";
 
+require("dotenv").config();
+
+
 const log: IDebugger = debug("app:mongoose-service");
 
 class MongooseService {
@@ -24,13 +27,13 @@ class MongooseService {
 
   connectWithRetry() {
     mongoose.set("strictQuery", false);
-    log("process.env.MONGODB_URI", "mongodb+srv://Nitesh:xAOI0QI6C0oL4U1A@@gratitude.dfuu9qx.mongodb.net/?retryWrites=true&w=majority");
-    const MONGODB_URI = "mongodb+srv://ShadyNitesh:jEc0bgDKsdWaxqBH@gratitude.i3vwfel.mongodb.net/?retryWrites=true&w=majority";
- 
-    log("Connecting to MongoDB(Retry when failed)");
+    log("process.env.MONGODB_URI", process.env.MONGODB_URI);
   
+
+    log("Connecting to MongoDB(Retry when failed)");
+
     mongoose
-      .connect(MONGODB_URI, this.mongooseOptions)
+      .connect(process.env.MONGODB_URI, this.mongooseOptions)
       .then(() => {
         log("MongoDB is connected");
         console.log(chalk.green("MongoDB is Connected"))

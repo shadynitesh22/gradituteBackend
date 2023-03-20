@@ -25,6 +25,11 @@ export class EmptyRequestError extends ApiError {
         super("bad-request",StatusCodes.BAD_REQUEST, 'Request body is empty!');
     }
 }
+export class PasswordFormatError extends ApiError {
+    constructor() {
+        super("Password Formate Wrong",StatusCodes.UNAUTHORIZED, 'Password must contain at least 8 characters, including uppercase and lowercase letters, numbers, and special characters.');
+    }
+}
  
 export class TooManyRequestsError extends ApiError {
     constructor() {
@@ -56,25 +61,38 @@ export class UserEmpty extends ApiError {
     }
 }
 
-export function PasswordFormatter(password: string): string {
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-    if (!passwordRegex.test(password)) {
-        throw new BadRequestError(
-            "Password formate is not correct",
-            ["Password must contain at least 8 characters, including uppercase and lowercase letters, numbers, and special characters."]
-        );
+export class UserExists extends ApiError {
+    constructor() {
+        super("Duplicate user",StatusCodes.BAD_REQUEST, 'User already exist! Please try another email');
     }
-    return password;
+}
+
+export function PasswordFormatter(req:Request) {
+    const password = req.body.password;
+    
+    const passwordRegex =/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+        throw new PasswordFormatError();
+
+    }else{
+     
+        return password;
+    }
+
+   
     
 }
 
 export function UserAlreadyExist(req:Request){
+  
     const user = req.body.email;
+  
     if (user) {
-        throw new UserEmpty();
+        throw new UserExists();
           
     }
 }
+
 export function checkTooManyRequests(req: any, limit: number, windowsMs: number): void {
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     const timeStamp = Date.now();

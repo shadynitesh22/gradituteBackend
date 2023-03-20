@@ -1,3 +1,4 @@
+import { SignUpUserRequest } from '../Validators/SignupUser.request';
 import RequestValidator from '../ErrorHandlers/Request.Validator';
 import { CreateUserRequest } from '../Validators/CreateUserRequest';
 import {AuthController} from './auth.controller'
@@ -15,7 +16,9 @@ router.post(
     auth_ctr.login
   );
   
-router.post('/signup',auth_ctr.Signup);
+router.post('/signup',
+RequestValidator.validate<SignUpUserRequest>(SignUpUserRequest),
+auth_ctr.Signup);
 
 
 

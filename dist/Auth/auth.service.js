@@ -9,7 +9,19 @@ class AuthService {
         try {
             const user = user_model_1.default.build(data);
             return user.save().then(user => {
-                // console.log(user, "Works hai");
+                return user;
+            }).catch(e => {
+                throw new Error(`Error while creating user: ${e.message}`);
+            });
+        }
+        catch (e) {
+            throw new Error(`Error while creating user: ${e.message}`);
+        }
+    }
+    createTempUser(data) {
+        try {
+            const user = user_model_1.default.build(data);
+            return user.save().then(user => {
                 return user;
             }).catch(e => {
                 throw new Error(`Error while creating user: ${e.message}`);

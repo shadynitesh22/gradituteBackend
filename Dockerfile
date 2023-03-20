@@ -7,11 +7,11 @@ RUN apk add --no-cache tini
 RUN mkdir -p /usr/src/apps/node_modules
 
 # Change ownership of the working directory to the node:node user:group
-RUN chown -R node:node /usr/src/apps
+# RUN chown -R node:node /usr/src/apps
 
 
 # Set the user to use when running this image
-USER node
+
 
 # Set the default working directory for the app
 WORKDIR /usr/src/apps
@@ -37,7 +37,7 @@ COPY . ./
 RUN ls -l
 
 # Expose API port
-EXPOSE 3000
+EXPOSE 9000
 
 ENTRYPOINT ["/sbin/tini", "--"]
 

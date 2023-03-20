@@ -32,6 +32,7 @@
     "mongodb": "^4.13.0",
     "mongoose": "^6.9.1",
     "node-encoder": "^2.0.4",
+    "nodemailer": "^6.9.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",

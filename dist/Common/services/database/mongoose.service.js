@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const debug_1 = __importDefault(require("debug"));
 const chalk_1 = __importDefault(require("chalk"));
+require("dotenv").config();
 const log = (0, debug_1.default)("app:mongoose-service");
 class MongooseService {
     constructor() {
@@ -24,11 +25,10 @@ class MongooseService {
     }
     connectWithRetry() {
         mongoose_1.default.set("strictQuery", false);
-        log("process.env.MONGODB_URI", "mongodb+srv://Nitesh:xAOI0QI6C0oL4U1A@@gratitude.dfuu9qx.mongodb.net/?retryWrites=true&w=majority");
-        const MONGODB_URI = "mongodb+srv://ShadyNitesh:jEc0bgDKsdWaxqBH@gratitude.i3vwfel.mongodb.net/?retryWrites=true&w=majority";
+        log("process.env.MONGODB_URI", process.env.MONGODB_URI);
         log("Connecting to MongoDB(Retry when failed)");
         mongoose_1.default
-            .connect(MONGODB_URI, this.mongooseOptions)
+            .connect(process.env.MONGODB_URI, this.mongooseOptions)
             .then(() => {
             log("MongoDB is connected");
             console.log(chalk_1.default.green("MongoDB is Connected"));

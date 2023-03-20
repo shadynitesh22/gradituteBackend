@@ -5,14 +5,15 @@ import * as dotenv from 'dotenv';
 import cors from 'cors';
 import mongooseService from './Common/services/database/mongoose.service';
 
-import passport from 'passport';
 
 import setRoute from './routes'
 
 
+const env = require('dotenv')
+
+env.config()
 
 
-dotenv.config();
 
 const session = require('express-session');
 

@@ -1,19 +1,20 @@
 import { Request, Response, NextFunction } from "express";
+import { type } from "os";
 
-import { ApiError, BadRequestError, NotFoundError, TooManyRequestsError, EmptyRequestError, UserEmpty, PasswordFormatter } from "./ApiError";
+import { ApiError, BadRequestError, NotFoundError, TooManyRequestsError, EmptyRequestError, UserEmpty, PasswordFormatter,  UserExists, PasswordFormatError } from "./ApiError";
 
 export default class ErrorHandler {
 
     static handleError(error: ApiError, _req: Request, res: Response, _next: NextFunction) {
 
-
-        const { statusCode, message, rawErrors } = error;
+        
+        const { type,statusCode, message, rawErrors } = error;
         let statusCodes = error.statusCode;
         if (typeof statusCode !== 'number') {
             statusCodes = 404;
         }
         res.status(statusCode).json({
-            status: 'error',
+            status: type,
             error: {
                 code: statusCode,
                 message,
@@ -38,18 +39,17 @@ export default class ErrorHandler {
     }
 
     static passwordFormat(req: Request, res: Response, next: NextFunction) {
-        PasswordFormatter(req.body.password);
-        next();
+        
+        const error = PasswordFormatter(req);
+        ErrorHandler.handleError(error, req, res, next);
+      
 
     }
 
     static userDoseNotExist(req: Request, res: Response, next: NextFunction) {
-        const user = req.body.email;
-        if (!user) {
             const error = new UserEmpty();
             ErrorHandler.handleError(error, req, res, next);
-        }
-        next();
+
 
     }
 
@@ -63,5 +63,10 @@ export default class ErrorHandler {
         next(convertedError);
     }
 
+    static UserExists(req: Request, res: Response, next: NextFunction) {
+        const error = new UserExists();
+        ErrorHandler.handleError(error, req, res, next);
+ 
+    }
 
 }

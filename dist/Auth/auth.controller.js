@@ -8,14 +8,15 @@ const auth_service_1 = __importDefault(require("./auth.service"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const debug_1 = __importDefault(require("debug"));
 const password_1 = require("../Common/services/authentication/password");
-const jwtSecret = process.env.JWT_SECRET || "12321321";
-const tokenExpirationInSeconds = 36000;
+const sendVerificationEmail_service_1 = require("../User/services/sendVerificationEmail.service");
 const passport_1 = __importDefault(require("passport"));
 const passport_jwt_1 = require("passport-jwt");
 const user_model_1 = __importDefault(require("../User/models/user.model"));
 const ApiError_1 = require("../ErrorHandlers/ApiError");
 const http_status_codes_1 = require("http-status-codes");
 const ErrorHandlers_1 = __importDefault(require("../ErrorHandlers/ErrorHandlers"));
+const jwtSecret = process.env.JWT_SECRET;
+const tokenExpirationInSeconds = process.env.tokenExpirationInSeconds;
 const log = (0, debug_1.default)("auth:controller");
 const jwtOpts = {
     jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -38,10 +39,11 @@ class AuthController {
             const email = req.body.email;
             const password = req.body.password;
             const user = await auth_service_1.default.findUserByEmail(email);
+            log("user", user);
             if (user) {
                 const isPasswordMatch = await password_1.Password.compare(user.password, password);
                 if (!isPasswordMatch) {
-                    ErrorHandlers_1.default.handleError(new ApiError_1.ApiError("Password Error", http_status_codes_1.StatusCodes.BAD_GATEWAY, "Password is wrong !"), req, res, next);
+                    throw new ApiError_1.ApiError("Password Wrong", http_status_codes_1.StatusCodes.UNAUTHORIZED, "The password you typed is incorrect. Please try again.");
                 }
                 console.log("jwt Secret", jwtSecret);
                 const token = jsonwebtoken_1.default.sign({ email }, jwtSecret, {
@@ -58,56 +60,39 @@ class AuthController {
             }
         }
         catch (error) {
-            next(error);
+            ErrorHandlers_1.default.handleError(error, req, res, next);
         }
     }
     // Login Function Ends here
     async Signup(req, res, next) {
         try {
-            const username = req.body.username;
-            const email = req.body.email;
-            const password = req.body.password;
-            const UserType = req.body.UserType;
+            const { firstName, lastName, email, password, UserType, isActive } = req.body;
             const user = await auth_service_1.default.findUserByEmail(email);
             log("user", user);
-            if (user) {
-                throw new Error("User already exists");
+            if (!user) {
+                const passwordError = (0, ApiError_1.PasswordFormatter)(req);
+                console.log(passwordError, "passwordError");
+                const newUser = await auth_service_1.default.createUser({ firstName, lastName, UserType, email, password, isActive });
+                (0, sendVerificationEmail_service_1.sendActivationEmail)(newUser.email);
+                log("newUser", newUser);
+                //  const token = jwt.sign({ email, password }, jwtSecret, { expiresIn: tokenExpirationInSeconds });
+                //  console.log("token", token);
+                const message = `Email has been send to your email ${newUser.email}. Open the email to activate your account`;
+                return res.status(200).json({
+                    success: true,
+                    data: newUser,
+                    message: message,
+                });
             }
             else {
-                const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-                if (!passwordRegex.test(password)) {
-                    return res.status(400).json({
-                        success: false,
-                        message: "Password must contain at least 8 characters, including uppercase and lowercase letters, numbers, and special characters.",
-                    });
-                }
-                try {
-                    const newUser = await auth_service_1.default.createUser({
-                        username,
-                        UserType,
-                        email,
-                        password,
-                    });
-                    console.log(newUser, "Comes undefined i");
-                    const token = jsonwebtoken_1.default.sign({ username, password }, jwtSecret, {
-                        expiresIn: tokenExpirationInSeconds,
-                    });
-                    console.log(token, "get's the token or break here");
-                    return res.status(200).json({
-                        success: true,
-                        data: newUser,
-                        token,
-                    });
-                }
-                catch (e) {
-                    log("Controller capturing error", e);
-                    throw new Error("Error while registering");
-                }
+                ErrorHandlers_1.default.handleError(new ApiError_1.UserExists(), req, res, next);
             }
         }
-        catch (e) {
-            next(e);
+        catch (error) {
+            ErrorHandlers_1.default.handleError(error, req, res, next);
         }
+    }
+    async CompleteSignup(req, res, next, User) {
     }
 }
 exports.AuthController = AuthController;

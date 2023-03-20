@@ -4,6 +4,8 @@ export interface IUser {
     UserType: any;
     email: string;
     password: string;
-    username: string;
+    firstName: string;
+    lastName: string;
+    isActive: boolean;
 
 }

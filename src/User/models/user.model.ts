@@ -9,8 +9,9 @@ export interface UserDocument extends Document {
     UserType: IUserType["_id"];
     email: string;
     password: string;
-    username: string;
-
+    firstName: string;
+    lastName: string;
+    isActive: boolean;
 }
 
 
@@ -21,8 +22,10 @@ interface UserModel extends Model<UserDocument>{
 const UserSchema :Schema = new Schema({
     email :{type:String,required:true},
     password : {type:String,required:true},
-    username:{type:String,requried:true},
-    userType : {type:Schema.Types.ObjectId,ref:"UserType"}
+    firstName:{type:String,requried:true},
+    lastName:{type:String,required:true},
+    userType : {type:Schema.Types.ObjectId,ref:"UserType"},
+    isActive:{type:Boolean,required:false,default:false},
 
 },
 {
